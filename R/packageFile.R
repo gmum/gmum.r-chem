@@ -1,10 +1,10 @@
 #object containing coefficients, matrix, vector and time taken to run LR function
-createObject <- function(a, b, c, d){
+createObject <- function(c, X, y, t){
   newS3 <- list(
-    first_arg = a,
-    second_arg = b,
-    third_arg = c,
-    fourth_arg = d
+    coefs = c,
+    matrix = X,
+    vector = y,
+    time = t
   )
   class(newS3) <- append(class(newS3),"LR")
   return(newS3)
@@ -16,7 +16,7 @@ generate.exampleData <- function(){
   x2 <- c(6,3,2,1,-2,-4,-3,6,2,5,1,7,-2,6,-7,-2,-4,1,1,3)
   y <- c(1,-4,6,3,-4,6,-8,1,-2,7,-2,8,5,3,8,-4,6,-4,2,1)
   X <- matrix(cbind(x1,x2),20,2)
-  result <- createObject(X,y,NULL,NULL)
+  result <- createObject(NULL,X,y,NULL)
   return(result)
 }
 
@@ -50,10 +50,10 @@ show.LR <- function(c,X,y){
 
 summary.LR <- function(c, ...){
   if(is.null(X)){
-    X<- c$second_arg
+    X<- c$matrix
   }
-  b <- c$first_arg 
-  time <- c$fourth_arg
+  b <- c$coefs 
+  time <- c$time
   negative <- 0
   positive <- 0
   b0 <- b[1]
@@ -116,29 +116,29 @@ LR <- function(X,y,include_bias){
 }
 
 #PLOT, optional arguments: X- matrix x, y- vector y
-plot.LR <- function(c, ...){
+plot.LR <- function(c, X, y){
   if(is.null(X) && is.null(y)){
-    X<- c$second_arg
-    y<- c$third_arg
+    X<- c$matrix
+    y<- c$vector
   }
-  b <- c$first_arg
+  b <- c$coefs
   if(dim(X)[2] == 2){
     b0 <- b[1]
     b1 <- b[2]
     b2 <- b[3]
-    points <- X[,2] > (-1)*((b1/b2)*X[,1]+(b0/b2))
+    points <- y > b0+b1*X[,1]+b2*X[,2]
     plot(X[points==TRUE,1], X[points==TRUE,2],
-         xlim = c(-65,65), ylim = c(-65,65),
+         xlim = c(min(X),max(X)), ylim = c(min(X),max(X)),
          xlab = "X1", ylab = "X2", col = "red")
     par(new=TRUE)
     plot(X[points==FALSE,1], X[points==FALSE,2],
-         xlim = c(-65,65), ylim = c(-65,65),
+         xlim = c(min(X),max(X)), ylim = c(min(X),max(X)),
          xlab = "X1", ylab = "X2", col = "blue")
     par(new=TRUE)
-    curve((-1)*(b1/b2)*x+(b0/b2), xlim = c(-65,65), ylim = c(-65,65),
+    curve((-1)*(b1/b2)*x+(b0/b2), xlim = c(min(X),max(X)), ylim = c(min(X),max(X)),
           xlab = "X1", ylab = "X2")
   }
   else{
-    print("dim(X) > 2")
+    stop("dim(X)>2",call. = TRUE)
   }
 }
