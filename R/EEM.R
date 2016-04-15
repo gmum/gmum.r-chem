@@ -20,21 +20,20 @@ dataX <- function(n,m){
   }
   X <- matrix(cbind(X),n,m)
   return(X)
-}2
+}
 
 dataY <- function(n){
   y <- c()
   for(i in 1:n){
-    extra <- sample(-50:50, 1, replace = FALSE)
+    extra <- sample(1:2, 1, replace = TRUE)
     y <- append(y, extra)
   }
   return(y)
 }
 
 sigmoid <- function(X, W, b){
-  bi <- as.vector(b)
-  part1 <- X%*%t(W)
-  return(1./(1.+exp((part1)-b)))
+  result <- 1./(1.+exp((X%*%t(W))-b))
+  return(result)
 }
 
 pdf <- function(X, i, sigma, mean){
@@ -58,19 +57,16 @@ fitEEM <- function(X,y){
   b <- hid$bias
   H <- sigmoid(X,W,b)
   labels <- array(NA,0)
-  labels <- append(labels,min(y))
-  labels <- append(labels,max(y))
+  labels <- append(labels,c(min(y),max(y)))
   m <- c()
   sigma <- c()
   
   for(i in 1:2){
     data <- matrix()
-    data <- cbind(data,H[y==labels[i]])
-    data <- data[-1]
-    data <- cbind(data)
+    data <- matrix(H[y==labels[i]], ncol = length((H[y==labels[i]])))
     m[i] <- mean(data)
     #LW covariance estimation
-    #estymaja macierzy kowariancji
+    #estymaja macierzy kowariancji bez LW
     sigma[i] <- tawny::cov.shrink(data)
   }
   #Moore-Penrose pseudo-inverse of a matrix
