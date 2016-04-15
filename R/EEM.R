@@ -66,7 +66,6 @@ fitEEM <- function(X,y){
     data <- matrix(H[y==labels[i]], ncol = length((H[y==labels[i]])))
     m[i] <- mean(data)
     #LW covariance estimation
-    #estymaja macierzy kowariancji bez LW
     sigma[i] <- tawny::cov.shrink(data)
   }
   #Moore-Penrose pseudo-inverse of a matrix
