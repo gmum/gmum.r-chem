@@ -1,10 +1,19 @@
-createObject <- function(W, b){
-  newS3 <- list(
+hiddenObject <- function(W, b){
+  hidS3 <- list(
     array = W,
     bias = b
   )
-  class(newS3) <- append(class(newS3),"hidden_layer")
-  return(newS3)
+  class(hidS3) <- append(class(hidS3),"hidden_layer")
+  return(hidS3)
+}
+
+fitObject <- function(s, b){
+  fitS3 <- list(
+    sigma = s,
+    beta = b
+  )
+  class(fitS3) <- append(class(fitS3),"fit")
+  return(fitS3)
 }
 
 #dataExample
@@ -19,7 +28,9 @@ dataX <- function(n,m){
     X <- append(X,x1)
   }
   X <- matrix(cbind(X),n,m)
-  return(X)
+  SD <- sqrt(sum((X-mean(X))^2)/((dim(X)[1]*dim(X)[2])-1))
+  result <- (X-mean(X))/SD
+  return(result)
 }
 
 dataY <- function(n){
@@ -36,7 +47,8 @@ sigmoid <- function(X, W, b){
   return(result)
 }
 
-pdf <- function(X, i, sigma, mean){
+pdf <- function(X, i, sigma){
+  mean <- mean(X)
   result <- 1./(sqrt(2*pi*sigma[i])*exp((-1)*((X - mean)^2)/(2*sigma[i])))
   return(result)
 }
@@ -44,10 +56,10 @@ pdf <- function(X, i, sigma, mean){
 hidden_init <- function(X){
   h <- sample(100,1)
   current_h <- max(1, min(h, dim(X)[1]))
-  W <- matrix(sample(-50:50, size = current_h*dim(X)[2], replace = FALSE),
+  W <- matrix(sample(-1:1, size = current_h*dim(X)[2], replace = TRUE),
               nrow = current_h, ncol = dim(X)[2])
   b <- rnorm(current_h)
-  result <- createObject(W, b)
+  result <- hiddenObject(W, b)
   return(result)
 }
 
@@ -75,15 +87,11 @@ fitEEM <- function(X,y){
     m[i] <- t(beta) %*% t(m[i])
     sigma[i] <- t(beta) %*% (sigma[i] %*% beta)
   }
+  result <- fitObject(sigma,beta)
+  return(result)
 }
 
 predict <- function(X, W, b, beta){
   p <- sigmoid(X, W, b) %*% beta
   result <- 
 }
-
-
-
-
-
-
