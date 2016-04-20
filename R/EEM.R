@@ -28,8 +28,7 @@ dataX <- function(n,m){
     X <- append(X,x1)
   }
   X <- matrix(cbind(X),n,m)
-  SD <- sqrt(sum((X-mean(X))^2)/((dim(X)[1]*dim(X)[2])-1))
-  result <- (X-mean(X))/SD
+  result <- (X-mean(X))/sd(X)
   return(result)
 }
 
