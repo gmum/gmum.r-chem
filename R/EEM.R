@@ -1,19 +1,10 @@
-hiddenObject <- function(W, b){
-  hidS3 <- list(
-    array = W,
-    bias = b
-  )
-  class(hidS3) <- append(class(hidS3),"hidden_layer")
-  return(hidS3)
-}
-
-fitObject <- function(s, b){
-  fitS3 <- list(
+EEMObject <- function(s, b){
+  EEM <- list(
     sigma = s,
     beta = b
   )
-  class(fitS3) <- append(class(fitS3),"fit")
-  return(fitS3)
+  class(EEM) <- append(class(EEM),"EEM")
+  return(EEM)
 }
 
 #dataExample
@@ -52,20 +43,19 @@ pdf <- function(X, i, sigma){
   return(result)
 }
 
-hidden_init <- function(X){
-  h <- sample(100,1)
+hidden_init <- function(X, h){
   current_h <- max(1, min(h, dim(X)[1]))
   W <- matrix(sample(-1:1, size = current_h*dim(X)[2], replace = TRUE),
               nrow = current_h, ncol = dim(X)[2])
   b <- rnorm(current_h)
-  result <- hiddenObject(W, b)
-  return(result)
+  return(list(W,b))
 }
 
-fitEEM <- function(X,y){
-  hid <- hidden_init(X)
-  W <- hid$array
-  b <- hid$bias
+EEM <- function(X, y, h){
+  hid <- hidden_init(X, h)
+  Wprim <- unlist(hid[1])
+  W <- matrix(Wprim, ncol = sqrt(length(Wprim)), nrow = sqrt(length(Wprim))) 
+  b <- unlist(hid[2])
   H <- sigmoid(X,W,b)
   labels <- array(NA,0)
   labels <- append(labels,c(min(y),max(y)))
@@ -76,7 +66,7 @@ fitEEM <- function(X,y){
     data <- matrix()
     data <- matrix(H[y==labels[i]], ncol = length((H[y==labels[i]])))
     m[i] <- mean(data)
-    #LW covariance estimation
+  #  LW covariance estimation
     sigma[i] <- tawny::cov.shrink(data)
   }
   #Moore-Penrose pseudo-inverse of a matrix
@@ -86,11 +76,10 @@ fitEEM <- function(X,y){
     m[i] <- t(beta) %*% t(m[i])
     sigma[i] <- t(beta) %*% (sigma[i] %*% beta)
   }
-  result <- fitObject(sigma,beta)
+  result <- EEMObject(sigma,beta)
   return(result)
 }
 
 predict <- function(X, W, b, beta){
   p <- sigmoid(X, W, b) %*% beta
-  result <- 
 }
