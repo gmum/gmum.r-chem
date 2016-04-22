@@ -1,10 +1,10 @@
 EEMObject <- function(s, b){
-  EEM <- list(
+  eem <- list(
     sigma = s,
     beta = b
   )
-  class(EEM) <- append(class(EEM),"EEM")
-  return(EEM)
+  class(eem) <- append(class(eem),"EEM")
+  return(eem)
 }
 
 #dataExample
@@ -18,8 +18,8 @@ dataX <- function(n,m){
     }
     X <- append(X,x1)
   }
-  X <- matrix(cbind(X),n,m)
-  result <- (X-mean(X))/sd(X)
+  X <- (X-mean(X))/sd(X)
+  result <- matrix(cbind(X),n,m)
   return(result)
 }
 
@@ -67,11 +67,11 @@ EEM <- function(X, y, h){
     data <- matrix(H[y==labels[i]], ncol = length((H[y==labels[i]])))
     m[i] <- mean(data)
   #  LW covariance estimation
-    sigma[i] <- tawny::cov.shrink(data)
+    dataprim <- t(data) %*% data #????????????????????
+    sigma[i] <- tawny::cov.shrink(dataprim) #???????????????
   }
   #Moore-Penrose pseudo-inverse of a matrix
   beta <- MASS::ginv(sigma[1]+sigma[2]) %*% t(m[2]-m[1])
-  
   for(i in 1:2){
     m[i] <- t(beta) %*% t(m[i])
     sigma[i] <- t(beta) %*% (sigma[i] %*% beta)
