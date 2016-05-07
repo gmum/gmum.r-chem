@@ -37,7 +37,6 @@ dataY <- function(n){
 }
 
 sigmoid <- function(X, W, b){
-  browser()
   part <- X%*%t(W)
   for(i in 1:dim(part)[1]){
     for(j in 1:dim(part)[2]){
@@ -144,7 +143,7 @@ predict_proba <- function(X, eem){
   pdf <- c(pdf1, pdf2)
   result <- array(NA,0)
   result <- t(append(result, pdf))
-  
+  print(result)
 }
 
 final_result <- function(X, y, eem){
