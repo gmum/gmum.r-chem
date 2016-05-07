@@ -37,10 +37,11 @@ dataY <- function(n){
 }
 
 sigmoid <- function(X, W, b){
+  browser()
   part <- X%*%t(W)
   for(i in 1:dim(part)[1]){
     for(j in 1:dim(part)[2]){
-      part[i,j] <- part[i,j] - b[i]
+      part[i,j] <- part[i,j] - b[j]
     }
   }
   result <- 1./(1.+exp(part))
@@ -63,7 +64,7 @@ hidden_init <- function(X, h){
 EEM <- function(X, y, h){
   hid <- hidden_init(X, h)
   Wprim <- unlist(hid[1])
-  W <- matrix(Wprim, ncol = dim(X)[2], nrow = h) 
+  W <- matrix(Wprim, ncol = dim(X)[2], nrow = length(Wprim)/dim(X)[2]) 
   bprim <- unlist(hid[2])
   b <- matrix(bprim, ncol = 1, nrow = length(bprim))
   H <- sigmoid(X,W,b)
@@ -132,10 +133,26 @@ predict <- function(X, y, eem){
   return(labels[result])
 }
 
+predict_proba <- function(X, eem){
+  W <- eem$array
+  beta <- eem$beta
+  b <- eem$bias
+  pprim <- sigmoid(X, W, b)
+  p <- pprim %*% beta
+  pdf1 <- pdf(p, 1, eem$sigma, eem$mean)
+  pdf2 <- pdf(p, 2, eem$sigma, eem$mean)
+  pdf <- c(pdf1, pdf2)
+  result <- array(NA,0)
+  result <- t(append(result, pdf))
+  
+}
+
 final_result <- function(X, y, eem){
   prd <- predict(X,y,eem)
   counter <- 0
+  print(prd)
   for(i in 1:length(prd)){
+    print(y[i])
     if(prd[i] == y[i]){
       counter <- counter+1
     }
