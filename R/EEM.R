@@ -74,7 +74,7 @@ EEM <- function(X, y, h){
   for(i in 1:2){
     data <- matrix()
     m <- c()
-    data <- matrix(H[y==labels[i],], nrow = length(H[y==labels[i],]),ncol = dim(H)[2])
+    data <- matrix(H[y==labels[i],], nrow = length(H[y==labels[i],])/dim(H)[2],ncol = dim(H)[2])
     #prep mean for data - 1,2
     for(k in 1:dim(data)[2]){
       mn <- 0
@@ -129,12 +129,19 @@ predict <- function(X, y, eem){
   for(i in 1:length(pdf1)){
     result <- append(result,which.max(pdf_mat[,i]))
   }
-  return(labels[result])
+  prd <- labels[result]
+  counter <- 0
+  for(i in 1:length(prd)){
+    if(prd[i] == y[i]){
+      counter <- counter+1
+    }
+  }
+  return(counter/length(prd))
 }
 
 predict_proba <- function(X, eem){
   W <- eem$array
-  beta <- eem$beta
+  beta <- t(eem$beta)
   b <- eem$bias
   pprim <- sigmoid(X, W, b)
   p <- pprim %*% beta
@@ -143,18 +150,4 @@ predict_proba <- function(X, eem){
   pdf <- c(pdf1, pdf2)
   result <- array(NA,0)
   result <- t(append(result, pdf))
-  print(result)
-}
-
-final_result <- function(X, y, eem){
-  prd <- predict(X,y,eem)
-  counter <- 0
-  print(prd)
-  for(i in 1:length(prd)){
-    print(y[i])
-    if(prd[i] == y[i]){
-      counter <- counter+1
-    }
-  }
-  return(counter/length(prd))
 }
