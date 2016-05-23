@@ -108,7 +108,7 @@ EEM <- function(X, y, h, C, seed){
   sigma1 <- matrix(sigma_res[1 : (len/2)], nrow = sqrt((len/2)), ncol = sqrt((len/2)))
   sigma2 <- matrix(sigma_res[(len/2)+1 : (len)], nrow = sqrt((len/2)), ncol = sqrt((len/2)))
   
-  if(is.finite(sigma1) && is.finite(sigma2)){
+  if(all(is.finite(sigma1)) && all(is.finite(sigma2))){
     mi <- matrix(mi, nrow = length(mi)/2)
     mi <- t(mi)
     m <- mi[2,] - mi[1,]
