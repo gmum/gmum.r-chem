@@ -107,39 +107,40 @@ EEM <- function(X, y, h, C, seed){
   len <- length(sigma_res)
   sigma1 <- matrix(sigma_res[1 : (len/2)], nrow = sqrt((len/2)), ncol = sqrt((len/2)))
   sigma2 <- matrix(sigma_res[(len/2)+1 : (len)], nrow = sqrt((len/2)), ncol = sqrt((len/2)))
-  mi <- matrix(mi, nrow = length(mi)/2)
-  mi <- t(mi)
-  m <- mi[2,] - mi[1,]
-  m <- matrix(m, nrow = 1)
   
-  #Removing NA's WYWAL RZUC WYJATEK
-  sigma1[!is.finite(sigma1)] <- 0
-  sigma2[!is.finite(sigma2)] <- 0
-  
-  sigma <- sigma1 + sigma2
-  beta <- MASS::ginv(sigma) %*% t(m)
-  
-  mi <- t(mi)
-  m <- c()
-  c1 <- t(beta)
-  c2 <- matrix(mi[,1], nrow = 1)
-  c2 <- t(c2)
-  c3 <- beta
-  m <- append(m,c1 %*% c2)
-  res <- sigma1 %*% c3
-  sigma1 <- c1 %*% res
-  
-  c1 <- t(beta)
-  c2 <- matrix(mi[,2], nrow = 1)
-  c2 <- t(c2)
-  c3 <- beta
-  m <- append(m,c1 %*% c2)
-  res <- sigma2 %*% c3
-  sigma2 <- c1 %*% res
-  
-  sigma <- append(sigma1, sigma2)
-  result <- EEMObject(sigma,beta,W,b,m)
-  return(result)
+  if(is.finite(sigma1) && is.finite(sigma2)){
+    mi <- matrix(mi, nrow = length(mi)/2)
+    mi <- t(mi)
+    m <- mi[2,] - mi[1,]
+    m <- matrix(m, nrow = 1)
+    sigma <- sigma1 + sigma2
+    beta <- MASS::ginv(sigma) %*% t(m)
+    
+    mi <- t(mi)
+    m <- c()
+    c1 <- t(beta)
+    c2 <- matrix(mi[,1], nrow = 1)
+    c2 <- t(c2)
+    c3 <- beta
+    m <- append(m,c1 %*% c2)
+    res <- sigma1 %*% c3
+    sigma1 <- c1 %*% res
+    
+    c1 <- t(beta)
+    c2 <- matrix(mi[,2], nrow = 1)
+    c2 <- t(c2)
+    c3 <- beta
+    m <- append(m,c1 %*% c2)
+    res <- sigma2 %*% c3
+    sigma2 <- c1 %*% res
+    
+    sigma <- append(sigma1, sigma2)
+    result <- EEMObject(sigma,beta,W,b,m)
+    return(result)
+  }
+  else{
+    print("Sigma is not finite!")
+  }
 }
 
 predict <- function(X, y, eem){
