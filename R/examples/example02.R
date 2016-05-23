@@ -15,6 +15,5 @@ seed <- 0
 
 eem <- EEM(X, y, h, C, seed)
 print(eem)
-
-print(predict(X, y, eem))
-print(predict_proba(X,eem))
+predict(X, y, eem)
+predict_proba(X, eem)

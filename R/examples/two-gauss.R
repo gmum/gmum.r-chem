@@ -41,6 +41,6 @@ seed <- NULL
 seed <- sample(1:1000, 1)
 
 eem <- EEM(X, y, h, C, seed)
-print(EEM(X, y, h, C, seed))
-print(predict(X, y, eem))
-print(predict_proba(X, eem))
+print(eem)
+predict(X, y, eem)
+predict_proba(X, eem)
