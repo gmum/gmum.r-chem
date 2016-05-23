@@ -55,8 +55,8 @@ pdf <- function(X, i, sigma, mean){
   return(result)
 }
 
-hidden_init <- function(X, h){
-  set.seed(0)
+hidden_init <- function(X, h, seed){
+  set.seed(seed)
   current_h <- max(1, min(h, dim(X)[1]))
   W <- matrix(sample(-1:1, size = current_h*dim(X)[2], replace = TRUE),
               nrow = current_h, ncol = dim(X)[2])
@@ -64,9 +64,9 @@ hidden_init <- function(X, h){
   return(list(W,b,current_h))
 }
 
-EEM <- function(X, y, h, C){
+EEM <- function(X, y, h, C, seed){
   flag <- is.null(C)
-  hid <- hidden_init(X, h)
+  hid <- hidden_init(X, h, seed)
   Wprim <- unlist(hid[1])
   W <- matrix(Wprim, ncol = dim(X)[2], nrow = length(Wprim)/dim(X)[2]) 
   bprim <- unlist(hid[2])
@@ -112,7 +112,7 @@ EEM <- function(X, y, h, C){
   m <- mi[2,] - mi[1,]
   m <- matrix(m, nrow = 1)
   
-  #Removing NA's
+  #Removing NA's WYWAL RZUC WYJATEK
   sigma1[!is.finite(sigma1)] <- 0
   sigma2[!is.finite(sigma2)] <- 0
   
@@ -149,10 +149,11 @@ predict <- function(X, y, eem){
   pprim <- sigmoid(X, W, b)
   labels <- array(NA,0)
   labels <- append(labels,c(min(y),max(y)))
-  p <- c(pprim %*% t(beta))
+  p <- pprim %*% beta
   pdf1 <- pdf(p, 1, eem$sigma, eem$mean)
   pdf2 <- pdf(p, 2, eem$sigma, eem$mean)
-  pdf_mat <- matrix(rbind(pdf1, pdf2), ncol = length(pdf1))
+  pdf_mat <- matrix(rbind(pdf1, pdf2), ncol = 2)
+  pdf_mat <- t(pdf_mat)
   result <- c()
   for(i in 1:length(pdf1)){
     result <- append(result,which.max(pdf_mat[,i]))
@@ -169,7 +170,8 @@ predict <- function(X, y, eem){
 
 predict_proba <- function(X, eem){
   W <- eem$matrix
-  beta <- t(eem$beta)
+  browser()
+  beta <- eem$beta
   b <- eem$bias
   pprim <- sigmoid(X, W, b)
   p <- pprim %*% beta
