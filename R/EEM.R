@@ -25,7 +25,6 @@ dataX <- function(n,m){
   X <- (X-mean(X))/sd(X)
   result <- matrix(cbind(X),m,n)
   result <- t(result)
-  write(result, file = "data", ncolumns = dim(result)[2])
   return(result)
 }
 
@@ -171,7 +170,6 @@ predict <- function(X, y, eem){
 
 predict_proba <- function(X, eem){
   W <- eem$matrix
-  browser()
   beta <- eem$beta
   b <- eem$bias
   pprim <- sigmoid(X, W, b)
