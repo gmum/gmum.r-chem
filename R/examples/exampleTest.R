@@ -1,42 +1,21 @@
-#Gaussian dataset
-n <- 100
-n <- sample(1:150,1)
-
-m <- 2
-m <- sample(1:10,1)
+#random dataset
+n <- 52
+m <- 6
 
 X <- c()
 y <- c()
 
-p1 <- n/2
-p2 <- n/2
-
-if(n %% 2 == 1){
-  p1 <- n/2 + 0.5
-  p2 <- n/2 - 0.5
-}
-
-for(i in 1:p1){
-  x <- c()
-  for(j in 1:m){
-    extra <- sample(0:20, 1, replace = FALSE)
-    x <- append(x, extra)
+for(i in 1:m){
+  x1 <- c()
+  for(j in 1:n){
+    extra <- sample(-50:50, 1, replace = FALSE)
+    x1 <- append(x1, extra)
   }
-  X <- append(X, x)
-  y <- append(y,1)
+  X <- append(X,x1)
+  y <- append(y,sample(1:2, 1))
 }
-for(i in 1:p2){
-  x <- c()
-  for(j in 1:m){
-    extra1 <- sample(30:50, 1, replace = FALSE)
-    x <- append(x, extra1)
-  }
-  X <- append(X, x)
-  y <- append(y,2)
-} 
-
+X <- (X-mean(X))/sd(X)
 X <- matrix(X, nrow = n, byrow = TRUE)
-y <- matrix(y, nrow = n)
 
 PM <- c(sample(1:n, n, replace = FALSE))
 PM_X <- c()
@@ -51,7 +30,7 @@ for(i in 1:n){
 X <- matrix(PM_X, nrow = n, byrow = TRUE)
 y <- matrix(PM_y, nrow = n)
 
-h <- sample(1:10, 1)
+h <- 4
 
 C <- NULL
 C <- 10000

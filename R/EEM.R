@@ -11,33 +11,6 @@ EEMObject <- function(s, b, W, bi, m){
     return(eem)
 }
 
-#dataExample
-dataX <- function(n,m){
-  X <- c()
-  for(i in 1:m){
-    x1 <- c()
-    for(j in 1:n){
-      extra <- sample(-50:50, 1, replace = FALSE)
-      x1 <- append(x1, extra)
-    }
-    X <- append(X,x1)
-  }
-  X <- (X-mean(X))/sd(X)
-  result <- matrix(cbind(X),m,n)
-  result <- t(result)
-  return(result)
-}
-
-dataY <- function(n){
-  y <- c()
-  for(i in 1:n){
-    extra <- sample(1:2, 1, replace = TRUE)
-    y <- append(y, extra)
-  }
-  y <- matrix(rbind(y))
-  return(y)
-}
-
 sigmoid <- function(X, W, b){
   part <- X%*%t(W)
   for(i in 1:dim(part)[1]){
@@ -58,7 +31,7 @@ hidden_init <- function(X, h, seed){
   set.seed(seed)
   current_h <- max(1, min(h, dim(X)[1]))
   W <- matrix(sample(-1:1, size = current_h*dim(X)[2], replace = TRUE),
-              nrow = current_h, ncol = dim(X)[2])
+              nrow = current_h, byrow = TRUE)
   b <- rnorm(current_h)
   return(list(W,b,current_h))
 }
@@ -95,7 +68,7 @@ EEM <- function(X, y, h, C, seed){
     if(flag == FALSE){
       D <- Matrix::Diagonal(current_h)
       D <- matrix(D, ncol = current_h, nrow = current_h)
-      sigma_C <- D /(2.0*C)
+      sigma_C <- sigma + (D /(2.0*C))
       sigma_res <- append(sigma_res, sigma_C)
     }
     else{
@@ -158,13 +131,17 @@ predict <- function(X, y, eem){
   for(i in 1:length(pdf1)){
     result <- append(result,which.max(pdf_mat[,i]))
   }
-  prd <- labels[result]
+  return(labels[result])
+}
+
+predict_accuracy <- function(predict){
   counter <- 0
-  for(i in 1:length(prd)){
-    if(prd[i] == y[i]){
-      counter <- counter+1
+  prd <- predict
+    for(i in 1:length(prd)){
+      if(prd[i] == y[i]){
+        counter <- counter+1
+      }
     }
-  }
   return(counter/length(prd))
 }
 
@@ -179,6 +156,10 @@ predict_proba <- function(X, eem){
   pdf <- c(pdf1, pdf2)
   result <- array(NA,0)
   result <- append(result, pdf)
-  res_sum <- sum(result)
-  return(result/res_sum)
+  return(result)
+}
+
+predict_proba_accuracy <- function(predict_p){
+  res_sum <- sum(predict_p)
+  return(predict_p/res_sum)
 }
