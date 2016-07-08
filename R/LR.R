@@ -106,7 +106,7 @@ LR <- function(X,y,include_bias){
       b <- append(b,m3[i])
     }
     end <- Sys.time()
-    result_time <- as.integer((end - begin) * 1000)
+    result_time <- (end - begin) * 1000
     result <- createObject(b,X,y,result_time)
     return(result)
   }
@@ -126,7 +126,7 @@ plot.LR <- function(c, X, y){
     b0 <- b[1]
     b1 <- b[2]
     b2 <- b[3]
-    points <- y > b0+b1*X[,1]+b2*X[,2]
+    points <- 0 > b0+b1*X[,1]+b2*X[,2]
     plot(X[points==TRUE,1], X[points==TRUE,2],
          xlim = c(min(X),max(X)), ylim = c(min(X),max(X)),
          xlab = "X1", ylab = "X2", col = "red")
@@ -135,7 +135,7 @@ plot.LR <- function(c, X, y){
          xlim = c(min(X),max(X)), ylim = c(min(X),max(X)),
          xlab = "X1", ylab = "X2", col = "blue")
     par(new=TRUE)
-    curve((-1)*(b1/b2)*x+(b0/b2), xlim = c(min(X),max(X)), ylim = c(min(X),max(X)),
+    curve((b1/b2)*x+(b0/b2), xlim = c(min(X),max(X)), ylim = c(min(X),max(X)),
           xlab = "X1", ylab = "X2")
   }
   else{
