@@ -23,7 +23,7 @@ sigmoid <- function(X, W, b){
 }
 
 pdf <- function(X, i, sigma, mean){
-  result <- 1./(sqrt(2*pi*sigma[i])*exp((-1)*((X - mean[i])^2)/(2*sigma[i])))
+  result <- (1./sqrt(2*pi*sigma[i]))*exp((-1)*((X - mean[i])^2)/(2*sigma[i]))
   return(result)
 }
 
