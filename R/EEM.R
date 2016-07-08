@@ -23,7 +23,7 @@ sigmoid <- function(X, W, b){
 }
 
 pdf <- function(X, i, sigma, mean){
-  result <- 1./(sqrt(2*pi*sigma[i])*exp((-1)*((X - mean[i])^2)/(2*sigma[i])))
+  result <- (1./(sqrt(2*pi*sigma[i])))*exp((-1)*((X - mean[i])^2)/(2*sigma[i]))
   return(result)
 }
 
@@ -53,7 +53,7 @@ EEM <- function(X, y, h, C, seed){
   for(i in 1:2){
     data <- matrix()
     m <- c()
-    data <- matrix(H[y==labels[i],], nrow = length(H[y==labels[i],])/dim(H)[2],ncol = dim(H)[2])
+    data <- matrix(H[y==labels[i],], nrow = length(H[y==labels[i],])/dim(H)[2],ncol = dim(H)[2], byrow = TRUE)
     
     for(j in 1:dim(data)[2]){
       sum <- 0
@@ -77,11 +77,11 @@ EEM <- function(X, y, h, C, seed){
   }
   
   len <- length(sigma_res)
-  sigma1 <- matrix(sigma_res[1 : (len/2)], nrow = sqrt((len/2)), ncol = sqrt((len/2)))
-  sigma2 <- matrix(sigma_res[(len/2)+1 : (len)], nrow = sqrt((len/2)), ncol = sqrt((len/2)))
+  sigma1 <- matrix(sigma_res[1 : (len/2)], nrow = sqrt((len/2)), ncol = sqrt((len/2)), byrow = TRUE)
+  sigma2 <- matrix(sigma_res[(len/2)+1 : (len)], nrow = sqrt((len/2)), ncol = sqrt((len/2)), byrow = TRUE)
   
   if(all(is.finite(sigma1)) && all(is.finite(sigma2))){
-    mi <- matrix(mi, nrow = length(mi)/2)
+    mi <- matrix(mi, nrow = length(mi)/2, byrow = TRUE)
     mi <- t(mi)
     m <- mi[2,] - mi[1,]
     m <- matrix(m, nrow = 1)
@@ -118,15 +118,16 @@ EEM <- function(X, y, h, C, seed){
 predict <- function(X, y, eem){
   W <- eem$matrix
   b <- eem$bias
+  sigma <- eem$sigma
   beta <- eem$beta
   pprim <- sigmoid(X, W, b)
   labels <- array(NA,0)
   labels <- append(labels,c(min(y),max(y)))
   p <- pprim %*% beta
-  pdf1 <- pdf(p, 1, eem$sigma, eem$mean)
-  pdf2 <- pdf(p, 2, eem$sigma, eem$mean)
-  pdf_mat <- matrix(rbind(pdf1, pdf2), ncol = 2)
-  pdf_mat <- t(pdf_mat)
+  mean <- eem$mean
+  pdf1 <- pdf(p, 1, sigma, mean)
+  pdf2 <- pdf(p, 2, sigma, mean)
+  pdf_mat <- matrix(rbind(pdf1, pdf2), nrow = 2, byrow = TRUE)
   result <- c()
   for(i in 1:length(pdf1)){
     result <- append(result,which.max(pdf_mat[,i]))
@@ -134,8 +135,9 @@ predict <- function(X, y, eem){
   return(labels[result])
 }
 
-predict_accuracy <- function(predict){
+predict_accuracy <- function(predict, y){
   counter <- 0
+  y <- y
   prd <- predict
     for(i in 1:length(prd)){
       if(prd[i] == y[i]){
