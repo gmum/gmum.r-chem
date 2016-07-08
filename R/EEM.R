@@ -165,3 +165,4 @@ predict_proba_accuracy <- function(predict_p){
   res_sum <- sum(predict_p)
   return(predict_p/res_sum)
 }
+#
